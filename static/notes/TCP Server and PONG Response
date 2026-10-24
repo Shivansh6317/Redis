@@ -1,0 +1,34 @@
+Redis
+.It is an in-memory data store that clients communicate with over a network.
+.client sends a command ex PING(also used to check whether the redis server is healthy)
+.Redis server process it
+.server send back response ex PONG
+.Redis client communicate with redis server by sending commands
+
+TCP(Transmission Control Protocol)
+.A program that waits for clients, accept their connection, receives their data, and sends a response
+It make sure
+.data reaches the destination
+.data arrives in correct order
+.lost data can be sent again
+.a connection is established before communication
+
+Socket
+.A socket is a programming interface to the network communication
+(ServerSocket serverSocket = new ServerSocket(port))
+.ServerSocket listen for new TCP connection
+.A Socket communicates over an established connection with a particular client
+.new ServerSocket(port) - creates a server socket and binds it to the specific port as part of the constructor
+
+getOutputStream() -> get stream to sending bytes to the connected client
+OutputStream.write()-> operates on bytes.
+Java string represent text so it must be encoded into bytes using getBytes()
+
++PONG\r\n
++->type of response
+PONG->Response content(actual text returned by the server)
+\r->Carriage Return(13 ascii code) A special control character that marks the end of the current line
+\n->Line feed (10 ascii code)A special control character that moves to the next line
+\r\n-> Response is complete.You can now process it
+
+flush->send the data that is waiting in memory to its destination right now, it asks the stream to send any buffered data onwards immediately

@@ -14,22 +14,23 @@ public class Main {
     public static void main(String[] args) {
         int port = 6379;
 
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
+        try (ServerSocket serverSocket = new ServerSocket()) {
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(port));
             System.out.println("Redis server listening on port " + port);
                try(Socket clientSocket = serverSocket.accept();
                    InputStream inputStream=clientSocket.getInputStream();
                    Scanner sc=new Scanner(inputStream,StandardCharsets.UTF_8);
-                   OutputStream outputStream = clientSocket.getOutputStream())
+                   OutputStream outputStream = clientSocket.getOutputStream()){
                    System.out.println("Client connected!");
                    while(sc.hasNextLine()) {
                        String nextLine=sc.nextLine();
                        if(nextLine.contains("PING")){
                            outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));//PONG is RESP(Redis serialization protocol)
                            //UTF-8  convert text to bytes explicitly specifying avoids relying on machine's default encoding
+                           outputStream.flush();
                        }
-                       outputStream.flush();
+
                    }
 
 

@@ -18,18 +18,21 @@ public class Main {
             serverSocket.setReuseAddress(true);
             serverSocket.bind(new InetSocketAddress(port));
             System.out.println("Redis server listening on port " + port);
-           while(true){
-               try(Socket clientSocket = serverSocket.accept()) {
-                   System.out.println("Client connected!");
-
+               try(Socket clientSocket = serverSocket.accept();
                    InputStream inputStream=clientSocket.getInputStream();
-                   Scanner sc=new Scanner(inputStream);
-                   System.out.println(sc.nextLine());
+                   Scanner sc=new Scanner(inputStream,StandardCharsets.UTF_8);
+                   OutputStream outputStream = clientSocket.getOutputStream())
+                   System.out.println("Client connected!");
+                   while(sc.hasNextLine()) {
+                       String nextLine=sc.nextLine();
+                       if(nextLine.contains("PING")){
+                           outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));//PONG is RESP(Redis serialization protocol)
+                           //UTF-8  convert text to bytes explicitly specifying avoids relying on machine's default encoding
+                       }
+                       outputStream.flush();
+                   }
 
-                   OutputStream outputStream = clientSocket.getOutputStream();
-                   outputStream.write("+PONG\r\n".getBytes(StandardCharsets.UTF_8));//PONG is RESP(Redis serialization protocol)
-                   //UTF-8  convert text to bytes explicitly specifying avoids relying on machine's default encoding
-                   outputStream.flush();
+
                }catch (IOException e) {
                    System.err.println("Client error: " + e.getMessage());
                }
